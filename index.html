@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tạo Slide Thuyết Trình AI</title>
-  <!-- Nhúng thư viện Font Awesome chuẩn icon web -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
@@ -37,7 +36,6 @@
       flex: 1;
     }
 
-    /* Khung chính Glassmorphism */
     .glass-card {
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(20px);
@@ -64,7 +62,6 @@
       gap: 12px;
     }
 
-    /* Icon đũa thần dùng SVG sắc nét, phát sáng nhẹ */
     .magic-icon {
       font-size: 1.8rem;
       color: #c084fc;
@@ -253,7 +250,6 @@
       border-color: rgba(167, 139, 250, 0.5);
     }
 
-    /* Phần Footer */
     .footer-section {
       width: 100%;
       max-width: 800px;
@@ -323,10 +319,8 @@
       </h1>
       <p class="subtitle">Biến ý tưởng thô thành bài thuyết trình PPTX chuyên nghiệp trong vài giây</p>
 
-      <!-- Ô nhập ý tưởng -->
       <textarea id="userPrompt" placeholder="Nhập ý tưởng bài thuyết trình của bạn tại đây..."></textarea>
 
-      <!-- Khu vực nút bấm -->
       <div id="actionArea">
         <button id="btnSend" class="btn btn-primary" onclick="clickSend()">Gửi</button>
 
@@ -336,21 +330,18 @@
         </div>
       </div>
 
-      <!-- Trạng thái chờ -->
       <div id="loadingState" class="loading-state">
         <i class="fa-solid fa-spinner fa-spin"></i> AI đang nghiên cứu ý tưởng và chuẩn bị câu hỏi...
       </div>
 
-      <!-- Khung 3 câu hỏi cốt lõi -->
       <div id="questionsContainer" class="questions-container">
         <h3>🎯 Trả lời 3 câu hỏi sau để AI tạo slide đúng ý nhất:</h3>
         <div id="questionsList"></div>
-        <button class="btn btn-primary" style="margin-top: 10px;" onclick="alert('Đã ghi nhận! Bước tiếp theo sẽ tiến hành kết nối AI sinh file PPTX.')">Bắt đầu tạo Slide PPTX</button>
+        <button class="btn btn-primary" style="margin-top: 10px;" onclick="generatePresentation()">Bắt đầu tạo Slide PPTX</button>
       </div>
     </div>
   </div>
 
-  <!-- Phần Footer -->
   <footer class="footer-section">
     <div class="features-grid">
       <div class="feature-item">
@@ -394,7 +385,7 @@
         document.getElementById('loadingState').style.display = 'none';
         renderCoreQuestions();
         document.getElementById('questionsContainer').style.display = 'block';
-      }, 1500);
+      }, 1000);
     }
 
     function renderCoreQuestions() {
@@ -457,6 +448,62 @@
         inputBox.style.display = 'block';
         btnInput.classList.add('active');
         btnSelect.classList.remove('active');
+      }
+    }
+
+    async function generatePresentation() {
+      const prompt = document.getElementById('userPrompt').value.trim();
+
+      const getAnswer = (qId) => {
+        const isInput = document.getElementById(`box-input-${qId}`).style.display !== 'none';
+        if (isInput) {
+          return document.querySelector(`#box-input-${qId} input`).value;
+        } else {
+          return document.querySelector(`#box-select-${qId} select`).value;
+        }
+      };
+
+      const answers = {
+        q1: getAnswer(1),
+        q2: getAnswer(2),
+        q3: getAnswer(3)
+      };
+
+      document.getElementById('questionsContainer').style.display = 'none';
+      document.getElementById('loadingState').style.display = 'block';
+      document.getElementById('loadingState').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI đang sáng tạo nội dung & tạo file PPTX...';
+
+      try {
+        const response = await fetch('/api/generate-slide', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt, answers }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Có lỗi xảy ra từ máy chủ khi tạo slide!');
+        }
+
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = `Slide_${Date.now()}.pptx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        document.getElementById('loadingState').style.display = 'none';
+        alert('🎉 Đã tạo và tải file Slide PPTX thành công!');
+        
+        document.getElementById('btnSend').style.display = 'block';
+
+      } catch (error) {
+        alert('Lỗi: ' + error.message);
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('questionsContainer').style.display = 'block';
       }
     }
   </script>
