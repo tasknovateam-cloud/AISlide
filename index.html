@@ -12,13 +12,13 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    /* Nền không gian sâu với ảnh dải ngân hà mờ dịu mắt */
     body {
       min-height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      padding: 20px;
+      padding: 40px 20px 20px;
       background: 
         linear-gradient(rgba(10, 8, 20, 0.75), rgba(10, 8, 20, 0.85)),
         url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
@@ -27,7 +27,15 @@
       overflow-x: hidden;
     }
 
-    /* Khung chính phong cách Kính Mờ (Glassmorphism) */
+    .main-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+    }
+
+    /* Khung chính Glassmorphism */
     .glass-card {
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(20px);
@@ -48,6 +56,19 @@
       font-weight: 700;
       letter-spacing: -0.5px;
       margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Icon đũa thần magic nguyên màu, không bị mờ */
+    .magic-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.6));
+    }
+
+    .gradient-text {
       background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -82,7 +103,6 @@
       box-shadow: 0 0 20px rgba(167, 139, 250, 0.15);
     }
 
-    /* Phong cách nút bấm */
     .btn {
       padding: 14px 28px;
       font-size: 0.95rem;
@@ -143,7 +163,6 @@
       box-shadow: 0 10px 20px -5px rgba(239, 68, 68, 0.4);
     }
 
-    /* Trạng thái Loading */
     .loading-state {
       display: none;
       margin-top: 24px;
@@ -152,7 +171,6 @@
       animation: pulse 1.5s infinite;
     }
 
-    /* Khung 3 câu hỏi cốt lõi dạng kính */
     .questions-container {
       display: none;
       margin-top: 28px;
@@ -232,7 +250,46 @@
       border-color: rgba(167, 139, 250, 0.5);
     }
 
-    /* Các hiệu ứng Animation */
+    /* Phần Footer & Tính năng làm đẹp trang */
+    .footer-section {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 16px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .feature-item h4 {
+      font-size: 0.9rem;
+      color: #c084fc;
+      margin-bottom: 6px;
+    }
+
+    .feature-item p {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .copyright-text {
+      font-size: 0.82rem;
+      color: #64748b;
+      letter-spacing: 0.3px;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
@@ -251,35 +308,60 @@
 </head>
 <body>
 
-  <div class="glass-card">
-    <h1>✨ Tạo Slide Thuyết Trình AI</h1>
-    <p class="subtitle">Biến ý tưởng thô thành bài thuyết trình PPTX chuyên nghiệp trong vài giây</p>
+  <div class="main-wrapper">
+    <div class="glass-card">
+      <h1>
+        <span class="magic-icon">🪄</span>
+        <span class="gradient-text">Tạo Slide Thuyết Trình AI</span>
+      </h1>
+      <p class="subtitle">Biến ý tưởng thô thành bài thuyết trình PPTX chuyên nghiệp trong vài giây</p>
 
-    <!-- Ô nhập ý tưởng -->
-    <textarea id="userPrompt" placeholder="Nhập ý tưởng bài thuyết trình của bạn tại đây..."></textarea>
+      <!-- Ô nhập ý tưởng -->
+      <textarea id="userPrompt" placeholder="Nhập ý tưởng bài thuyết trình của bạn tại đây..."></textarea>
 
-    <!-- Khu vực nút bấm -->
-    <div id="actionArea">
-      <button id="btnSend" class="btn btn-primary" onclick="clickSend()">Gửi</button>
+      <!-- Khu vực nút bấm -->
+      <div id="actionArea">
+        <button id="btnSend" class="btn btn-primary" onclick="clickSend()">Gửi</button>
 
-      <div id="confirmGroup" class="confirm-group">
-        <button class="btn btn-confirm" onclick="clickConfirm()">Xác nhận</button>
-        <button class="btn btn-cancel" onclick="clickCancel()">Hủy</button>
+        <div id="confirmGroup" class="confirm-group">
+          <button class="btn btn-confirm" onclick="clickConfirm()">Xác nhận</button>
+          <button class="btn btn-cancel" onclick="clickCancel()">Hủy</button>
+        </div>
+      </div>
+
+      <!-- Trạng thái chờ -->
+      <div id="loadingState" class="loading-state">
+        ✨ AI đang nghiên cứu ý tưởng và chuẩn bị câu hỏi...
+      </div>
+
+      <!-- Khung 3 câu hỏi cốt lõi -->
+      <div id="questionsContainer" class="questions-container">
+        <h3>🎯 Trả lời 3 câu hỏi sau để AI tạo slide đúng ý nhất:</h3>
+        <div id="questionsList"></div>
+        <button class="btn btn-primary" style="margin-top: 10px;" onclick="alert('Đã ghi nhận! Bước tiếp theo sẽ tiến hành kết nối AI sinh file PPTX.')">Bắt đầu tạo Slide PPTX</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phần Footer giúp trang bớt trống trải -->
+  <footer class="footer-section">
+    <div class="features-grid">
+      <div class="feature-item">
+        <h4>⚡ Tạo Slide Cực Nhanh</h4>
+        <p>Tiết kiệm hàng giờ tự làm slide thủ công nhờ sức mạnh AI.</p>
+      </div>
+      <div class="feature-item">
+        <h4>🎯 Tùy Chỉnh Linh Hoạt</h4>
+        <p>AI lắng nghe nhu cầu thực tế để định hình đúng cấu trúc slide.</p>
+      </div>
+      <div class="feature-item">
+        <h4>📊 Xuất File PPTX Thật</h4>
+        <p>Dễ dàng tải về và tiếp tục chỉnh sửa trực tiếp trên PowerPoint.</p>
       </div>
     </div>
 
-    <!-- Trạng thái chờ -->
-    <div id="loadingState" class="loading-state">
-      ✨ AI đang nghiên cứu ý tưởng và chuẩn bị câu hỏi...
-    </div>
-
-    <!-- Khung 3 câu hỏi cốt lõi -->
-    <div id="questionsContainer" class="questions-container">
-      <h3>🎯 Trả lời 3 câu hỏi sau để AI tạo slide đúng ý nhất:</h3>
-      <div id="questionsList"></div>
-      <button class="btn btn-primary" style="margin-top: 10px;" onclick="alert('Đã ghi nhận! Bước tiếp theo sẽ tiến hành kết nối AI sinh file PPTX.')">Bắt đầu tạo Slide PPTX</button>
-    </div>
-  </div>
+    <p class="copyright-text">© 2026 AISlide. Được phát triển bởi Tasknova Team.</p>
+  </footer>
 
   <script>
     function clickSend() {
