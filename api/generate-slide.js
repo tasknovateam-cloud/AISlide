@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
       Phong cách: ${answers?.q2 || 'Hiện đại'}.
       Mục tiêu: ${answers?.q3 || 'Tổng quát'}.
 
-      Hãy trả về duy nhất một cấu trúc JSON hợp lệ (KHÔNG dùng markdown backticks \`\`\`json, KHÔNG kèm lời dẫn) theo cấu trúc:
+      Hãy trả về duy nhất một cấu trúc JSON hợp lệ (KHÔNG dùng markdown backticks, KHÔNG kèm lời dẫn) theo cấu trúc:
       {
         "title": "Tên bài thuyết trình",
         "slides": [
@@ -39,9 +39,9 @@ module.exports = async function handler(req, res) {
       Tạo khoảng 4 đến 5 slide nội dung chất lượng.
     `;
 
-    // Sử dụng model chuẩn gemini-1.5-flash
+    // Sử dụng model mới nhất gemini-3.5-flash
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-3.5-flash',
       contents: systemPrompt,
     });
 
