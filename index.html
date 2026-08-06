@@ -3,81 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tạo Slide Thuyết Trình AI - Galaxy Edition</title>
+  <title>Tạo Slide Thuyết Trình AI</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    /* Nền không gian sâu thẫm kết hợp dải ngân hà tím hồng đen */
+    /* Nền không gian sâu với ảnh dải ngân hà mờ dịu mắt */
     body {
-      background: radial-gradient(ellipse at bottom, #1b1035 0%, #090a0f 100%);
-      color: #f1f5f9;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       padding: 20px;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* Tạo hiệu ứng dải ngân hà lấp lánh huyền ảo phía sau */
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
       background: 
-        radial-gradient(circle at 20% 30%, rgba(147, 51, 234, 0.25) 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.15) 0%, transparent 50%);
-      z-index: 0;
-      pointer-events: none;
+        linear-gradient(rgba(10, 8, 20, 0.75), rgba(10, 8, 20, 0.85)),
+        url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
+      background-size: cover;
+      color: #f1f5f9;
+      overflow-x: hidden;
     }
 
-    .container {
-      position: relative;
-      z-index: 1;
-      background: rgba(15, 11, 28, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+    /* Khung chính phong cách Kính Mờ (Glassmorphism) */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 40px 32px;
       width: 100%;
-      max-width: 650px;
-      padding: 35px 30px;
-      border-radius: 20px;
-      border: 1px solid rgba(168, 85, 247, 0.3);
-      box-shadow: 0 0 30px rgba(147, 51, 234, 0.2), 0 10px 40px rgba(0, 0, 0, 0.8);
+      max-width: 620px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
       text-align: center;
+      animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
       margin-bottom: 10px;
-      background: linear-gradient(135deg, #c084fc, #f472b6, #e879f9);
+      background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 15px rgba(192, 132, 252, 0.3);
     }
 
     p.subtitle {
       font-size: 0.95rem;
-      color: #cbd5e1;
-      margin-bottom: 25px;
-      letter-spacing: 0.5px;
+      color: #94a3b8;
+      margin-bottom: 28px;
+      line-height: 1.5;
     }
 
     textarea {
       width: 100%;
       height: 130px;
       padding: 16px;
-      background: rgba(10, 6, 20, 0.7);
+      background: rgba(15, 23, 42, 0.5);
       color: #f8fafc;
-      border: 1px solid rgba(168, 85, 247, 0.4);
-      border-radius: 12px;
-      font-size: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      line-height: 1.5;
       resize: vertical;
       outline: none;
       margin-bottom: 20px;
@@ -85,101 +77,119 @@
     }
 
     textarea:focus {
-      border-color: #c084fc;
-      box-shadow: 0 0 15px rgba(192, 132, 252, 0.4);
+      border-color: rgba(167, 139, 250, 0.5);
+      background: rgba(15, 23, 42, 0.7);
+      box-shadow: 0 0 20px rgba(167, 139, 250, 0.15);
     }
 
+    /* Phong cách nút bấm */
     .btn {
-      padding: 13px 26px;
-      font-size: 1rem;
+      padding: 14px 28px;
+      font-size: 0.95rem;
       font-weight: 600;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Nút Gửi phối màu gradient ngân hà */
+    .btn:active {
+      transform: scale(0.98);
+    }
+
     .btn-primary {
-      background: linear-gradient(135deg, #8b5cf6, #d946ef);
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
       color: #ffffff;
       width: 100%;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
     }
 
     .btn-primary:hover {
-      background: linear-gradient(135deg, #7c3aed, #c026d3);
-      box-shadow: 0 0 20px rgba(217, 70, 239, 0.6);
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6);
+      transform: translateY(-2px);
     }
 
     .confirm-group {
       display: none;
       gap: 12px;
       width: 100%;
+      animation: fadeInUp 0.4s ease forwards;
     }
 
     .btn-confirm {
-      background: linear-gradient(135deg, #10b981, #059669);
+      background: rgba(34, 197, 94, 0.85);
       color: #ffffff;
       flex: 1;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      backdrop-filter: blur(10px);
     }
 
     .btn-confirm:hover {
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
-      transform: translateY(-1px);
+      background: rgba(34, 197, 94, 1);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);
     }
 
     .btn-cancel {
-      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      background: rgba(239, 68, 68, 0.85);
       color: #ffffff;
       flex: 1;
-      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+      backdrop-filter: blur(10px);
     }
 
     .btn-cancel:hover {
-      box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
-      transform: translateY(-1px);
+      background: rgba(239, 68, 68, 1);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(239, 68, 68, 0.4);
     }
 
+    /* Trạng thái Loading */
     .loading-state {
       display: none;
-      margin-top: 20px;
-      color: #e879f9;
-      font-size: 1.05rem;
-      text-shadow: 0 0 10px rgba(232, 121, 249, 0.5);
+      margin-top: 24px;
+      color: #c084fc;
+      font-size: 0.95rem;
+      animation: pulse 1.5s infinite;
     }
 
+    /* Khung 3 câu hỏi cốt lõi dạng kính */
     .questions-container {
       display: none;
-      margin-top: 25px;
+      margin-top: 28px;
       text-align: left;
-      background: rgba(10, 6, 20, 0.8);
-      padding: 22px;
-      border-radius: 14px;
-      border: 1px solid rgba(168, 85, 247, 0.3);
+      background: rgba(15, 23, 42, 0.4);
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      animation: fadeInUp 0.5s ease forwards;
     }
 
     .questions-container h3 {
-      font-size: 1.1rem;
-      margin-bottom: 16px;
-      color: #c084fc;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: #e2e8f0;
     }
 
     .question-card {
-      background: rgba(22, 15, 41, 0.9);
-      padding: 16px;
-      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 18px;
+      border-radius: 12px;
       margin-bottom: 16px;
-      border: 1px solid rgba(139, 92, 246, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .question-card:hover {
+      border-color: rgba(167, 139, 250, 0.3);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .question-title {
-      font-weight: 600;
+      font-weight: 500;
       margin-bottom: 12px;
-      font-size: 0.95rem;
-      color: #f1f5f9;
+      font-size: 0.92rem;
+      color: #cbd5e1;
     }
 
     .mode-buttons {
@@ -190,43 +200,59 @@
 
     .btn-mode {
       padding: 6px 14px;
-      font-size: 0.85rem;
-      background: rgba(255, 255, 255, 0.08);
-      color: #cbd5e1;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.25s ease;
     }
 
     .btn-mode.active {
-      background: linear-gradient(135deg, #a855f7, #ec4899);
-      color: #ffffff;
-      font-weight: bold;
-      border: none;
-      box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+      background: rgba(167, 139, 250, 0.2);
+      color: #c084fc;
+      border-color: rgba(167, 139, 250, 0.4);
+      font-weight: 600;
     }
 
     select, input[type="text"] {
       width: 100%;
-      padding: 10px 12px;
-      background: rgba(10, 6, 20, 0.9);
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.6);
       color: #f8fafc;
-      border: 1px solid rgba(168, 85, 247, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
       outline: none;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
+      transition: border-color 0.3s;
     }
 
     select:focus, input[type="text"]:focus {
-      border-color: #c084fc;
+      border-color: rgba(167, 139, 250, 0.5);
+    }
+
+    /* Các hiệu ứng Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>🌌 Tạo Slide Thuyết Trình AI</h1>
+  <div class="glass-card">
+    <h1>✨ Tạo Slide Thuyết Trình AI</h1>
     <p class="subtitle">Biến ý tưởng thô thành bài thuyết trình PPTX chuyên nghiệp trong vài giây</p>
 
     <!-- Ô nhập ý tưởng -->
@@ -244,19 +270,18 @@
 
     <!-- Trạng thái chờ -->
     <div id="loadingState" class="loading-state">
-      ✨ AI đang khám phá ý tưởng và khởi tạo câu hỏi...
+      ✨ AI đang nghiên cứu ý tưởng và chuẩn bị câu hỏi...
     </div>
 
     <!-- Khung 3 câu hỏi cốt lõi -->
     <div id="questionsContainer" class="questions-container">
-      <h3>🎯 Trả lời 3 câu hỏi sau để AI tạo slide chính xác nhất:</h3>
+      <h3>🎯 Trả lời 3 câu hỏi sau để AI tạo slide đúng ý nhất:</h3>
       <div id="questionsList"></div>
-      <button class="btn btn-primary" style="margin-top: 10px;" onclick="alert('Đã ghi nhận! Bước tiếp theo sẽ kết nối AI để xuất file PPTX.')">Bắt đầu tạo Slide PPTX</button>
+      <button class="btn btn-primary" style="margin-top: 10px;" onclick="alert('Đã ghi nhận! Bước tiếp theo sẽ tiến hành kết nối AI sinh file PPTX.')">Bắt đầu tạo Slide PPTX</button>
     </div>
   </div>
 
   <script>
-    // Bấm nút Gửi
     function clickSend() {
       const prompt = document.getElementById('userPrompt').value.trim();
       if (!prompt) {
@@ -267,13 +292,11 @@
       document.getElementById('confirmGroup').style.display = 'flex';
     }
 
-    // Bấm nút Hủy
     function clickCancel() {
       document.getElementById('confirmGroup').style.display = 'none';
       document.getElementById('btnSend').style.display = 'block';
     }
 
-    // Bấm nút Xác nhận
     function clickConfirm() {
       document.getElementById('confirmGroup').style.display = 'none';
       document.getElementById('loadingState').style.display = 'block';
@@ -285,7 +308,6 @@
       }, 1500);
     }
 
-    // Hiển thị 3 câu hỏi cốt lõi
     function renderCoreQuestions() {
       const questions = [
         {
@@ -330,7 +352,6 @@
       });
     }
 
-    // Chuyển đổi giữa Chế độ Chọn và Nhập
     function switchMode(qId, mode) {
       const selectBox = document.getElementById(`box-select-${qId}`);
       const inputBox = document.getElementById(`box-input-${qId}`);
