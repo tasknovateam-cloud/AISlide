@@ -18,7 +18,6 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: 'Chưa cấu hình GEMINI_API_KEY trên Vercel!' });
     }
 
-    // 1. Khởi tạo GoogleGenAI SDK mới theo đúng package.json
     const ai = new GoogleGenAI({ apiKey });
 
     const systemPrompt = `
@@ -40,9 +39,9 @@ module.exports = async function handler(req, res) {
       Tạo khoảng 4 đến 5 slide nội dung chất lượng.
     `;
 
-    // 2. Gọi model gemini-2.5-flash
+    // Sử dụng model chuẩn gemini-1.5-flash
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       contents: systemPrompt,
     });
 
@@ -50,11 +49,9 @@ module.exports = async function handler(req, res) {
     const cleanJsonString = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
     const presentationData = JSON.parse(cleanJsonString);
 
-    // 3. Tạo file PPTX bằng pptxgenjs
     const pptx = new PptxGenJS();
     pptx.layout = 'LAYOUT_16x9';
 
-    // Slide Tiêu đề
     const titleSlide = pptx.addSlide();
     titleSlide.background = { color: '0F172A' };
     titleSlide.addText(presentationData.title || prompt, {
@@ -62,7 +59,6 @@ module.exports = async function handler(req, res) {
       fontSize: 32, bold: true, color: 'FFFFFF', align: 'center'
     });
 
-    // Các slide nội dung
     if (presentationData.slides && Array.isArray(presentationData.slides)) {
       presentationData.slides.forEach((item) => {
         const slide = pptx.addSlide();
@@ -81,7 +77,6 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 4. Xuất file Buffer cho Node.js Serverless Function
     const buffer = await pptx.write({ outputType: 'nodebuffer' });
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
