@@ -3,167 +3,233 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tạo Slide Thuyết Trình AI</title>
+  <title>Tạo Slide Thuyết Trình AI - Galaxy Edition</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Roboto, sans-serif;
     }
+
+    /* Nền không gian sâu thẫm kết hợp dải ngân hà tím hồng đen */
     body {
-      background-color: #0f172a;
-      color: #f8fafc;
+      background: radial-gradient(ellipse at bottom, #1b1035 0%, #090a0f 100%);
+      color: #f1f5f9;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      overflow-x: hidden;
+      position: relative;
     }
+
+    /* Tạo hiệu ứng dải ngân hà lấp lánh huyền ảo phía sau */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(147, 51, 234, 0.25) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.15) 0%, transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
     .container {
-      background-color: #1e293b;
+      position: relative;
+      z-index: 1;
+      background: rgba(15, 11, 28, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       width: 100%;
       max-width: 650px;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      padding: 35px 30px;
+      border-radius: 20px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      box-shadow: 0 0 30px rgba(147, 51, 234, 0.2), 0 10px 40px rgba(0, 0, 0, 0.8);
       text-align: center;
     }
+
     h1 {
-      font-size: 1.8rem;
-      margin-bottom: 8px;
-      color: #38bdf8;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #c084fc, #f472b6, #e879f9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(192, 132, 252, 0.3);
     }
+
     p.subtitle {
       font-size: 0.95rem;
-      color: #94a3b8;
-      margin-bottom: 24px;
+      color: #cbd5e1;
+      margin-bottom: 25px;
+      letter-spacing: 0.5px;
     }
+
     textarea {
       width: 100%;
-      height: 120px;
-      padding: 14px;
-      background-color: #0f172a;
+      height: 130px;
+      padding: 16px;
+      background: rgba(10, 6, 20, 0.7);
       color: #f8fafc;
-      border: 1px solid #334155;
-      border-radius: 10px;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 12px;
       font-size: 1rem;
       resize: vertical;
       outline: none;
       margin-bottom: 20px;
+      transition: all 0.3s ease;
     }
+
     textarea:focus {
-      border-color: #38bdf8;
+      border-color: #c084fc;
+      box-shadow: 0 0 15px rgba(192, 132, 252, 0.4);
     }
+
     .btn {
-      padding: 12px 24px;
+      padding: 13px 26px;
       font-size: 1rem;
       font-weight: 600;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
     }
+
+    /* Nút Gửi phối màu gradient ngân hà */
     .btn-primary {
-      background-color: #38bdf8;
-      color: #0f172a;
-      width: 100%;
-    }
-    .btn-primary:hover {
-      background-color: #0284c7;
+      background: linear-gradient(135deg, #8b5cf6, #d946ef);
       color: #ffffff;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
     }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #7c3aed, #c026d3);
+      box-shadow: 0 0 20px rgba(217, 70, 239, 0.6);
+      transform: translateY(-1px);
+    }
+
     .confirm-group {
       display: none;
       gap: 12px;
       width: 100%;
     }
+
     .btn-confirm {
-      background-color: #22c55e;
+      background: linear-gradient(135deg, #10b981, #059669);
       color: #ffffff;
       flex: 1;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
+
     .btn-confirm:hover {
-      background-color: #16a34a;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+      transform: translateY(-1px);
     }
+
     .btn-cancel {
-      background-color: #ef4444;
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
       color: #ffffff;
       flex: 1;
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
     }
+
     .btn-cancel:hover {
-      background-color: #dc2626;
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+      transform: translateY(-1px);
     }
+
     .loading-state {
       display: none;
       margin-top: 20px;
-      color: #38bdf8;
+      color: #e879f9;
       font-size: 1.05rem;
+      text-shadow: 0 0 10px rgba(232, 121, 249, 0.5);
     }
+
     .questions-container {
       display: none;
       margin-top: 25px;
       text-align: left;
-      background-color: #0f172a;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #334155;
+      background: rgba(10, 6, 20, 0.8);
+      padding: 22px;
+      border-radius: 14px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
     }
+
     .questions-container h3 {
       font-size: 1.1rem;
       margin-bottom: 16px;
-      color: #38bdf8;
+      color: #c084fc;
     }
+
     .question-card {
-      background-color: #1e293b;
-      padding: 14px;
-      border-radius: 8px;
+      background: rgba(22, 15, 41, 0.9);
+      padding: 16px;
+      border-radius: 10px;
       margin-bottom: 16px;
-      border: 1px solid #334155;
+      border: 1px solid rgba(139, 92, 246, 0.25);
     }
+
     .question-title {
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-size: 0.95rem;
+      color: #f1f5f9;
     }
+
     .mode-buttons {
       display: flex;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
+
     .btn-mode {
-      padding: 6px 12px;
+      padding: 6px 14px;
       font-size: 0.85rem;
-      background-color: #334155;
-      color: #f8fafc;
-      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 6px;
       cursor: pointer;
+      transition: all 0.2s;
     }
+
     .btn-mode.active {
-      background-color: #38bdf8;
-      color: #0f172a;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      color: #ffffff;
       font-weight: bold;
+      border: none;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
     }
+
     select, input[type="text"] {
       width: 100%;
-      padding: 10px;
-      background-color: #0f172a;
+      padding: 10px 12px;
+      background: rgba(10, 6, 20, 0.9);
       color: #f8fafc;
-      border: 1px solid #334155;
-      border-radius: 6px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 8px;
       outline: none;
       font-size: 0.9rem;
+    }
+
+    select:focus, input[type="text"]:focus {
+      border-color: #c084fc;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>✨ Tạo Slide Thuyết Trình AI</h1>
+    <h1>🌌 Tạo Slide Thuyết Trình AI</h1>
     <p class="subtitle">Biến ý tưởng thô thành bài thuyết trình PPTX chuyên nghiệp trong vài giây</p>
 
-    <!-- Ô nhập ý tưởng (Không bị giới hạn ký tự) -->
+    <!-- Ô nhập ý tưởng -->
     <textarea id="userPrompt" placeholder="Nhập ý tưởng bài thuyết trình của bạn tại đây..."></textarea>
 
     <!-- Khu vực nút bấm -->
@@ -178,14 +244,14 @@
 
     <!-- Trạng thái chờ -->
     <div id="loadingState" class="loading-state">
-      ⏳ AI đang phân tích ý tưởng và khởi tạo câu hỏi...
+      ✨ AI đang khám phá ý tưởng và khởi tạo câu hỏi...
     </div>
 
     <!-- Khung 3 câu hỏi cốt lõi -->
     <div id="questionsContainer" class="questions-container">
-      <h3>🎯 Hãy trả lời 3 câu hỏi sau để AI tạo slide đúng ý bạn nhất:</h3>
+      <h3>🎯 Trả lời 3 câu hỏi sau để AI tạo slide chính xác nhất:</h3>
       <div id="questionsList"></div>
-      <button class="btn btn-primary" style="margin-top: 10px;" onclick="alert('Đã ghi nhận! Bước tiếp theo sẽ tiến hành kết nối AI sinh file PPTX.')">Bắt đầu tạo Slide PPTX</button>
+      <button class="btn btn-primary" style="margin-top: 10px;" onclick="alert('Đã ghi nhận! Bước tiếp theo sẽ kết nối AI để xuất file PPTX.')">Bắt đầu tạo Slide PPTX</button>
     </div>
   </div>
 
@@ -212,7 +278,6 @@
       document.getElementById('confirmGroup').style.display = 'none';
       document.getElementById('loadingState').style.display = 'block';
 
-      // Giả lập thời gian AI xử lý 1.5 giây
       setTimeout(() => {
         document.getElementById('loadingState').style.display = 'none';
         renderCoreQuestions();
@@ -265,7 +330,7 @@
       });
     }
 
-    // Chuyển đổi giữa chế độ Chọn và Nhập
+    // Chuyển đổi giữa Chế độ Chọn và Nhập
     function switchMode(qId, mode) {
       const selectBox = document.getElementById(`box-select-${qId}`);
       const inputBox = document.getElementById(`box-input-${qId}`);
