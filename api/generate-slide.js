@@ -1,90 +1,114 @@
-const { GoogleGenAI } = require('@google/genai');
-const PptxGenJS = require('pptxgenjs');
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import pptxgen from "pptxgenjs";
 
-module.exports = async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-  try {
-    const { prompt, answers } = req.body;
-
-    if (!prompt) {
-      return res.status(400).json({ error: 'Thiếu thông tin prompt!' });
+export default async function handler(req, res) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: 'Chưa cấu hình GEMINI_API_KEY trên Vercel!' });
+    const { action, topic, answers } = req.body;
+
+    if (!topic) {
+        return res.status(400).json({ message: 'Vui lòng cung cấp chủ đề.' });
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const systemPrompt = `
-      Bạn là một chuyên gia thiết kế bài thuyết trình. Hãy tạo nội dung slide dựa trên ý tưởng: "${prompt}".
-      Yêu cầu khán giả: ${answers?.q1 || 'Mọi người'}.
-      Phong cách: ${answers?.q2 || 'Hiện đại'}.
-      Mục tiêu: ${answers?.q3 || 'Tổng quát'}.
+        // BƯỚC 1: LẤY 3 CÂU HỎI CỐT LÕI DỰA TRÊN CHỦ ĐỀ
+        if (action === 'get-questions') {
+            const promptQuestions = `Bạn là chuyên gia thuyết trình. Hãy đưa ra 3 câu hỏi cốt lõi nhất về chủ đề "${topic}" để giúp người dùng làm rõ mục tiêu, đối tượng hướng đến hoặc nội dung quan trọng nhất cho bài thuyết trình. 
+            Trả về kết quả dưới dạng JSON duy nhất có cấu trúc:
+            {
+              "questions": [
+                "Câu hỏi 1...",
+                "Câu hỏi 2...",
+                "Câu hỏi 3..."
+              ]
+            }`;
 
-      Hãy trả về duy nhất một cấu trúc JSON hợp lệ (KHÔNG dùng markdown backticks, KHÔNG kèm lời dẫn) theo cấu trúc:
-      {
-        "title": "Tên bài thuyết trình",
-        "slides": [
-          {
-            "slideTitle": "Tiêu đề Slide 1",
-            "bullets": ["Ý chính 1", "Ý chính 2", "Ý chính 3"]
-          }
-        ]
-      }
-      Tạo khoảng 4 đến 5 slide nội dung chất lượng.
-    `;
+            const result = await model.generateContent(promptQuestions);
+            let responseText = result.response.text().trim();
+            responseText = responseText.replace(/```json/g, '').replace(/```/g, '');
+            const data = JSON.parse(responseText);
 
-    // Sử dụng model mới nhất gemini-3.5-flash
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.5-flash',
-      contents: systemPrompt,
-    });
+            return res.status(200).json(data);
+        }
 
-    const responseText = response.text;
-    const cleanJsonString = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
-    const presentationData = JSON.parse(cleanJsonString);
+        // BƯỚC 2: TẠO FILE PPTX TỪ CHỦ ĐỀ VÀ 3 CÂU TRẢ LỜI
+        if (action === 'generate-pptx') {
+            const promptSlide = `Tạo nội dung bài thuyết trình PowerPoint về chủ đề: "${topic}".
+            Người dùng đã trả lời 3 câu hỏi định hướng như sau:
+            ${answers ? answers.map((a, i) => `${i + 1}. ${a.question} -> Trả lời: ${a.answer}`).join('\n') : ''}
 
-    const pptx = new PptxGenJS();
-    pptx.layout = 'LAYOUT_16x9';
+            Hãy tạo bài thuyết trình gồm 3-5 slide. Trả về định dạng JSON thuần túy theo cấu trúc:
+            {
+              "slides": [
+                {
+                  "title": "Tiêu đề slide",
+                  "subtitle": "Mô tả ngắn hoặc phụ đề",
+                  "bullets": ["Ý chính 1", "Ý chính 2", "Ý chính 3"],
+                  "speakerNotes": "Ghi chú cho diễn giả khi trình bày slide này"
+                }
+              ]
+            }`;
 
-    const titleSlide = pptx.addSlide();
-    titleSlide.background = { color: '0F172A' };
-    titleSlide.addText(presentationData.title || prompt, {
-      x: 1, y: 2.2, w: '80%', h: 1.5,
-      fontSize: 32, bold: true, color: 'FFFFFF', align: 'center'
-    });
+            const result = await model.generateContent(promptSlide);
+            let responseText = result.response.text().trim();
+            responseText = responseText.replace(/```json/g, '').replace(/```/g, '');
+            const slideData = JSON.parse(responseText);
 
-    if (presentationData.slides && Array.isArray(presentationData.slides)) {
-      presentationData.slides.forEach((item) => {
-        const slide = pptx.addSlide();
-        slide.background = { color: 'F8FAFC' };
+            // Dùng pptxgenjs đóng gói file .pptx
+            const pptx = new pptxgen();
+            pptx.layout = 'LAYOUT_16x9';
 
-        slide.addText(item.slideTitle, {
-          x: 0.8, y: 0.6, w: '85%', h: 0.8,
-          fontSize: 24, bold: true, color: '1E293B'
-        });
+            slideData.slides.forEach((slideContent) => {
+                const slide = pptx.addSlide();
+                
+                // Thiết lập background tối sang trọng
+                slide.background = { color: "0F172A" };
 
-        const bulletText = item.bullets.map(b => ({ text: b, options: { bullet: true, breakLine: true } }));
-        slide.addText(bulletText, {
-          x: 0.8, y: 1.6, w: '85%', h: 4.5,
-          fontSize: 16, color: '334155', lineSpacing: 28
-        });
-      });
+                // Tiêu đề
+                slide.addText(slideContent.title, {
+                    x: 0.8, y: 0.6, w: '85%', h: 1.0,
+                    fontSize: 28, bold: true, color: "F8FAFC", fontFace: "Segoe UI"
+                });
+
+                // Phụ đề
+                if (slideContent.subtitle) {
+                    slide.addText(slideContent.subtitle, {
+                        x: 0.8, y: 1.5, w: '85%', h: 0.6,
+                        fontSize: 16, color: "94A3B8", italic: true, fontFace: "Segoe UI"
+                    });
+                }
+
+                // Bullets nội dung
+                if (slideContent.bullets && slideContent.bullets.length > 0) {
+                    const bulletText = slideContent.bullets.map(b => ({ text: b, options: { bullet: true, breakLine: true } }));
+                    slide.addText(bulletText, {
+                        x: 0.8, y: 2.3, w: '85%', h: 4.0,
+                        fontSize: 18, color: "CBD5E1", lineSpacing: 28, fontFace: "Segoe UI"
+                    });
+                }
+
+                // Ghi chú thuyết trình
+                if (slideContent.speakerNotes) {
+                    slide.addNotes(slideContent.speakerNotes);
+                }
+            });
+
+            // Xuất file dưới dạng Buffer để gửi về Client download
+            const buffer = await pptx.write({ outputType: "nodebuffer" });
+
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+            res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(topic)}.pptx"`);
+            return res.status(200).send(buffer);
+        }
+
+    } catch (error) {
+        console.error("API Error:", error);
+        return res.status(500).json({ message: "Đã xảy ra lỗi: " + error.message });
     }
-
-    const buffer = await pptx.write({ outputType: 'nodebuffer' });
-
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
-    res.setHeader('Content-Disposition', `attachment; filename=Slide_${Date.now()}.pptx`);
-    return res.status(200).send(buffer);
-
-  } catch (error) {
-    console.error('Lỗi Backend:', error);
-    return res.status(500).json({ error: error.message || 'Lỗi xử lý hệ thống!' });
-  }
-};
+}
