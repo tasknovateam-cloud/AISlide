@@ -1,223 +1,511 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI PowerPoint Generator</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tạo Slide Thuyết Trình AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 40px 20px 20px;
+      background: 
+        linear-gradient(rgba(10, 8, 20, 0.75), rgba(10, 8, 20, 0.85)),
+        url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
+      background-size: cover;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
 
-        body {
-            background-color: var(--bg-dark);
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+    .main-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+    }
 
-        .container {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 35px;
-            width: 100%;
-            max-width: 650px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 40px 32px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      text-align: center;
+      animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-        h1 { font-size: 26px; font-weight: 800; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    h1 {
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
 
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 14px; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
-        
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(15, 23, 42, 0.6);
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-            transition: 0.3s;
-        }
+    .magic-icon {
+      font-size: 1.8rem;
+      color: #c084fc;
+      filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.8));
+    }
 
-        input[type="text"]:focus, textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-        }
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: 0.3s;
-        }
+    p.subtitle {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
 
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    textarea {
+      width: 100%;
+      height: 130px;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.5);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
 
-        /* Step 2 Section */
-        #step2 { display: none; margin-top: 25px; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 20px; }
-        .question-item { margin-bottom: 15px; }
-        .q-label { font-size: 14px; color: #ec4899; font-weight: 700; margin-bottom: 6px; }
+    textarea:focus {
+      border-color: rgba(167, 139, 250, 0.5);
+      background: rgba(15, 23, 42, 0.7);
+      box-shadow: 0 0 20px rgba(167, 139, 250, 0.15);
+    }
 
-        .loading { display: none; text-align: center; color: #a855f7; margin-top: 15px; font-size: 14px; }
-    </style>
+    .btn {
+      padding: 14px 28px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #ffffff;
+      width: 100%;
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .confirm-group {
+      display: none;
+      gap: 12px;
+      width: 100%;
+      animation: fadeInUp 0.4s ease forwards;
+    }
+
+    .btn-confirm {
+      background: rgba(34, 197, 94, 0.85);
+      color: #ffffff;
+      flex: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-confirm:hover {
+      background: rgba(34, 197, 94, 1);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-cancel {
+      background: rgba(239, 68, 68, 0.85);
+      color: #ffffff;
+      flex: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-cancel:hover {
+      background: rgba(239, 68, 68, 1);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(239, 68, 68, 0.4);
+    }
+
+    .loading-state {
+      display: none;
+      margin-top: 24px;
+      color: #c084fc;
+      font-size: 0.95rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    .questions-container {
+      display: none;
+      margin-top: 28px;
+      text-align: left;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .questions-container h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: #e2e8f0;
+    }
+
+    .question-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 18px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .question-card:hover {
+      border-color: rgba(167, 139, 250, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .question-title {
+      font-weight: 500;
+      margin-bottom: 12px;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+    }
+
+    .mode-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .btn-mode {
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .btn-mode.active {
+      background: rgba(167, 139, 250, 0.2);
+      color: #c084fc;
+      border-color: rgba(167, 139, 250, 0.4);
+      font-weight: 600;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.6);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      outline: none;
+      font-size: 0.88rem;
+      transition: border-color 0.3s;
+    }
+
+    select:focus, input[type="text"]:focus {
+      border-color: rgba(167, 139, 250, 0.5);
+    }
+
+    .footer-section {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 16px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .feature-item h4 {
+      font-size: 0.9rem;
+      color: #c084fc;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .feature-item p {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .copyright-text {
+      font-size: 0.82rem;
+      color: #64748b;
+      letter-spacing: 0.3px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1><i class="fa-solid fa-wand-magic-sparkles"></i> AI Slide Generator</h1>
+  <div class="main-wrapper">
+    <div class="glass-card">
+      <h1>
+        <i class="fa-solid fa-wand-magic-sparkles magic-icon"></i>
+        <span class="gradient-text">Tạo Slide Thuyết Trình AI</span>
+      </h1>
+      <p class="subtitle">Biến ý tưởng thô thành bài thuyết trình PPTX chuyên nghiệp trong vài giây</p>
 
-        <!-- BƯỚC 1: NHẬP CHỦ ĐỀ -->
-        <div id="step1">
-            <div class="input-group">
-                <label for="topic">1. Nhập chủ đề thuyết trình của bạn:</label>
-                <input type="text" id="topic" placeholder="Ví dụ: Chiến lược Marketing 2026, Trí tuệ nhân tạo...">
-            </div>
-            <button class="btn" id="btnStep1" onclick="fetchQuestions()">
-                <i class="fa-solid fa-arrow-right"></i> Tiếp tục & Lấy câu hỏi định hướng
-            </button>
+      <textarea id="userPrompt" placeholder="Nhập ý tưởng bài thuyết trình của bạn tại đây..."></textarea>
+
+      <div id="actionArea">
+        <button id="btnSend" class="btn btn-primary" onclick="clickSend()">Gửi</button>
+
+        <div id="confirmGroup" class="confirm-group">
+          <button class="btn btn-confirm" onclick="clickConfirm()">Xác nhận</button>
+          <button class="btn btn-cancel" onclick="clickCancel()">Hủy</button>
         </div>
+      </div>
 
-        <!-- BƯỚC 2: TRẢ LỜI 3 CÂU HỎI VÀ XUẤT FILE -->
-        <div id="step2">
-            <label style="color: #f59e0b; margin-bottom: 15px;">2. Hãy trả lời 3 câu hỏi dưới đây để AI hiểu rõ ý bạn hơn:</label>
-            
-            <div id="questionsContainer"></div>
+      <div id="loadingState" class="loading-state">
+        <i class="fa-solid fa-spinner fa-spin"></i> AI đang nghiên cứu ý tưởng và chuẩn bị câu hỏi...
+      </div>
 
-            <button class="btn" id="btnStep2" onclick="generateAndDownloadPPTX()">
-                <i class="fa-solid fa-file-powerpoint"></i> Tạo & Tải File PPTX Ngay
-            </button>
-        </div>
+      <div id="questionsContainer" class="questions-container">
+        <h3>🎯 Trả lời 3 câu hỏi sau để AI tạo slide đúng ý nhất:</h3>
+        <div id="questionsList"></div>
+        <button class="btn btn-primary" style="margin-top: 10px;" onclick="generatePresentation()">Bắt đầu tạo Slide PPTX</button>
+      </div>
+    </div>
+  </div>
 
-        <div class="loading" id="loadingStatus">
-            <i class="fa-solid fa-spinner fa-spin"></i> <span id="loadingText">AI đang phân tích...</span>
-        </div>
+  <footer class="footer-section">
+    <div class="features-grid">
+      <div class="feature-item">
+        <h4><i class="fa-solid fa-bolt"></i> Tạo Slide Cực Nhanh</h4>
+        <p>Tiết kiệm hàng giờ tự làm slide thủ công nhờ sức mạnh AI.</p>
+      </div>
+      <div class="feature-item">
+        <h4><i class="fa-solid fa-sliders"></i> Tùy Chỉnh Linh Hoạt</h4>
+        <p>AI lắng nghe nhu cầu thực tế để định hình đúng cấu trúc slide.</p>
+      </div>
+      <div class="feature-item">
+        <h4><i class="fa-solid fa-file-powerpoint"></i> Xuất File PPTX Thật</h4>
+        <p>Dễ dàng tải về và tiếp tục chỉnh sửa trực tiếp trên PowerPoint.</p>
+      </div>
     </div>
 
-    <script>
-        let currentQuestions = [];
+    <p class="copyright-text">© 2026 AISlide. Được phát triển bởi Tasknova Team.</p>
+  </footer>
 
-        // HÀM BƯỚC 1: GỬI CHỦ ĐỀ ĐỂ AI TẠO 3 CÂU HỎI
-        async function fetchQuestions() {
-            const topic = document.getElementById('topic').value.trim();
-            if (!topic) return alert('Vui lòng nhập chủ đề!');
+  <script>
+    function clickSend() {
+      const prompt = document.getElementById('userPrompt').value.trim();
+      if (!prompt) {
+        alert('Vui lòng nhập ý tưởng bài thuyết trình trước khi gửi!');
+        return;
+      }
+      document.getElementById('btnSend').style.display = 'none';
+      document.getElementById('confirmGroup').style.display = 'flex';
+    }
 
-            const btn1 = document.getElementById('btnStep1');
-            const loading = document.getElementById('loadingStatus');
-            const loadingText = document.getElementById('loadingText');
+    function clickCancel() {
+      document.getElementById('confirmGroup').style.display = 'none';
+      document.getElementById('btnSend').style.display = 'block';
+    }
 
-            btn1.disabled = true;
-            loading.style.display = 'block';
-            loadingText.innerText = "AI đang suy nghĩ 3 câu hỏi cốt lõi...";
+    function clickConfirm() {
+      document.getElementById('confirmGroup').style.display = 'none';
+      document.getElementById('loadingState').style.display = 'block';
 
-            try {
-                const res = await fetch('/api/generate-slide', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'get-questions', topic })
-                });
+      setTimeout(() => {
+        document.getElementById('loadingState').style.display = 'none';
+        renderCoreQuestions();
+        document.getElementById('questionsContainer').style.display = 'block';
+      }, 1000);
+    }
 
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Lỗi lấy câu hỏi');
+    function renderCoreQuestions() {
+      const questions = [
+        {
+          id: 1,
+          title: "1. Khán giả chính lắng nghe bài thuyết trình này là ai?",
+          options: ["Học sinh / Sinh viên", "Nhà đầu tư / Ban lãnh đạo", "Khách hàng / Đối tác"]
+        },
+        {
+          id: 2,
+          title: "2. Phong cách thiết kế slide bạn mong muốn là gì?",
+          options: ["Tối giản & Hiện đại", "Sáng tạo & Tương tác", "Chuyên nghiệp & Nhiều số liệu"]
+        },
+        {
+          id: 3,
+          title: "3. Mục tiêu lớn nhất của bài thuyết trình này là gì?",
+          options: ["Thuyết phục / Bán hàng", "Truyền cảm hứng / Đào tạo", "Báo cáo tiến độ / Tổng kết"]
+        }
+      ];
 
-                currentQuestions = data.questions;
+      const listDiv = document.getElementById('questionsList');
+      listDiv.innerHTML = '';
 
-                // Render 3 câu hỏi ra màn hình
-                const container = document.getElementById('questionsContainer');
-                container.innerHTML = currentQuestions.map((q, index) => `
-                    <div class="question-item">
-                        <div class="q-label"><i class="fa-solid fa-circle-question"></i> Câu ${index + 1}: ${q}</div>
-                        <textarea id="ans_${index}" rows="2" placeholder="Nhập câu trả lời ngắn của bạn... (Hoặc để trống nếu muốn AI tự gợi ý)"></textarea>
-                    </div>
-                `).join('');
+      questions.forEach(q => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.innerHTML = `
+          <div class="question-title">${q.title}</div>
+          <div class="mode-buttons">
+            <button id="btn-select-${q.id}" class="btn-mode active" onclick="switchMode(${q.id}, 'select')">Chọn</button>
+            <button id="btn-input-${q.id}" class="btn-mode" onclick="switchMode(${q.id}, 'input')">Nhập</button>
+          </div>
+          <div id="box-select-${q.id}">
+            <select>
+              ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+            </select>
+          </div>
+          <div id="box-input-${q.id}" style="display: none;">
+            <input type="text" placeholder="Tự nhập câu trả lời của bạn..." />
+          </div>
+        `;
+        listDiv.appendChild(card);
+      });
+    }
 
-                // Chuyển sang Bước 2
-                document.getElementById('step2').style.display = 'block';
+    function switchMode(qId, mode) {
+      const selectBox = document.getElementById(`box-select-${qId}`);
+      const inputBox = document.getElementById(`box-input-${qId}`);
+      const btnSelect = document.getElementById(`btn-select-${qId}`);
+      const btnInput = document.getElementById(`btn-input-${qId}`);
 
-            } catch (err) {
-                alert('Có lỗi: ' + err.message);
-            } finally {
-                btn1.disabled = false;
-                loading.style.display = 'none';
-            }
+      if (mode === 'select') {
+        selectBox.style.display = 'block';
+        inputBox.style.display = 'none';
+        btnSelect.classList.add('active');
+        btnInput.classList.remove('active');
+      } else {
+        selectBox.style.display = 'none';
+        inputBox.style.display = 'block';
+        btnInput.classList.add('active');
+        btnSelect.classList.remove('active');
+      }
+    }
+
+    async function generatePresentation() {
+      const prompt = document.getElementById('userPrompt').value.trim();
+
+      const getAnswer = (qId) => {
+        const isInput = document.getElementById(`box-input-${qId}`).style.display !== 'none';
+        if (isInput) {
+          return document.querySelector(`#box-input-${qId} input`).value;
+        } else {
+          return document.querySelector(`#box-select-${qId} select`).value;
+        }
+      };
+
+      const answers = {
+        q1: getAnswer(1),
+        q2: getAnswer(2),
+        q3: getAnswer(3)
+      };
+
+      document.getElementById('questionsContainer').style.display = 'none';
+      document.getElementById('loadingState').style.display = 'block';
+      document.getElementById('loadingState').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI đang sáng tạo nội dung & tạo file PPTX...';
+
+      try {
+        const response = await fetch('/api/generate-slide', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt, answers }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Có lỗi xảy ra từ máy chủ khi tạo slide!');
         }
 
-        // HÀM BƯỚC 2: GỬI CHỦ ĐỀ + 3 CÂU TRẢ LỜI ĐỂ TẠO VÀ TẢI FILE PPTX
-        async function generateAndDownloadPPTX() {
-            const topic = document.getElementById('topic').value.trim();
-            const btn2 = document.getElementById('btnStep2');
-            const loading = document.getElementById('loadingStatus');
-            const loadingText = document.getElementById('loadingText');
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = `Slide_${Date.now()}.pptx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
 
-            // Thu thập câu trả lời
-            const answers = currentQuestions.map((q, index) => {
-                const ans = document.getElementById(`ans_${index}`).value.trim();
-                return {
-                    question: q,
-                    answer: ans || 'Theo gợi ý chuẩn nhất từ AI'
-                };
-            });
+        document.getElementById('loadingState').style.display = 'none';
+        alert('🎉 Đã tạo và tải file Slide PPTX thành công!');
+        
+        document.getElementById('btnSend').style.display = 'block';
 
-            btn2.disabled = true;
-            loading.style.display = 'block';
-            loadingText.innerText = "AI đang Soạn Slide & Đóng gói File PPTX...";
-
-            try {
-                const res = await fetch('/api/generate-slide', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'generate-pptx', topic, answers })
-                });
-
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.message || 'Lỗi tạo file PPTX');
-                }
-
-                // Tự động tải file về trình duyệt
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${topic.replace(/\s+/g, '_')}_Presentation.pptx`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-
-                alert('Tạo bài thuyết trình thành công! File PPTX đã được tải về.');
-
-            } catch (err) {
-                alert('Có lỗi: ' + err.message);
-            } finally {
-                btn2.disabled = false;
-                loading.style.display = 'none';
-            }
-        }
-    </script>
+      } catch (error) {
+        alert('Lỗi: ' + error.message);
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('questionsContainer').style.display = 'block';
+      }
+    }
+  </script>
 </body>
 </html>
